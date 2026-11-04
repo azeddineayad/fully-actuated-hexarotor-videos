@@ -57,10 +57,13 @@ def main():
     ap.add_argument("--start", required=True); ap.add_argument("--stop", required=True)
     ap.add_argument("--layout", nargs="*", default=[])
     ap.add_argument("--track", action="store_true", help="make the Gazebo camera follow uav1")
+    ap.add_argument("--track-offset", default="-2.6,-2.6,1.3", help="follow offset x,y,z [m] (world frame)")
     ap.add_argument("--fps", type=int, default=10)
     ap.add_argument("--max", type=float, default=1800.0)
     args = ap.parse_args()
     env = ENV.format(ws=args.ws)
+    ox, oy, oz = (float(v) for v in args.track_offset.split(","))
+    track_msg = TRACK.replace("follow_offset: {x: -2.6, y: -2.6, z: 1.3}", f"follow_offset: {{x: {ox}, y: {oy}, z: {oz}}}")
     subprocess.run([args.stop_sim], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     tmux("kill-session", "-t", S)
     tmux("new-session", "-d", "-s", S, "-x", "200", "-y", "50")
@@ -77,7 +80,7 @@ def main():
 
     def track():
         if args.track:                                       # from a pane of the simulation (same environment)
-            tmux("send-keys", "-t", pane(2), f"gz topic -t /gui/track -m gz.msgs.CameraTrack -p '{TRACK}'", "Enter")
+            tmux("send-keys", "-t", pane(2), f"gz topic -t /gui/track -m gz.msgs.CameraTrack -p '{track_msg}'", "Enter")
 
     rec = None
     t0 = None

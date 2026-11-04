@@ -14,6 +14,7 @@ flight is shown (no commands); sped-up parts are labelled in the video.
 | 5. Suspended pendulum | Section 5.4, Fig. 10 | [scenario5_pendulum.webm](videos/scenario5_pendulum.webm) | 0.5 m rod with 0.25 kg under the body, B-spline from and to the ground |
 | 6. Unknown walls | Section 5.5, Fig. 11 | [scenario6_walls.webm](videos/scenario6_walls.webm) | the walls are seen only with the onboard RGB-D camera (top left), map and path (bottom right) |
 | 7. Labyrinth | Section 5.6, Fig. 13 | [scenario7_labyrinth.webm](videos/scenario7_labyrinth.webm) | escape from a 7×7 maze with the depth camera: dead ends, re-planning; live rotor forces, Euler angles, velocity |
+| 8. Cleaning of solar panels | Section 5.7, Figs. 13–14 | [scenario8_solar_cleaning.webm](videos/scenario8_solar_cleaning.webm) | two panels tilted 10°, body pitched 10° so that the nozzle faces the glass, water spray during 8 forward/backward passes at 0.6 m from the glass |
 
 Scenarios 1 and 2 (validation of the model, circles at level attitude) were flown in the MRS simulation with the
 simulation controller; they have no video here (Fig. 7 of the paper).
