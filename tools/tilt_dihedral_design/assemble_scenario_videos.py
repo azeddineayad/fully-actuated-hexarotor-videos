@@ -183,26 +183,13 @@ def scenario_video(sc, speed):
 
 
 def optimization_video():
-    frames = P / "design_optimization" / "results" / "pareto_frames"
-    parts = OUT / "parts"
-    parts.mkdir(parents=True, exist_ok=True)
-    ms.OUT = parts
-    ms.slide("opt_title", "Scenario 1: convergence of the optimization",
-             ["Purpose: show that the genetic algorithm (NSGA-II) finds the Pareto front of the",
-              "design problem, and that it converges to the exact front of the exhaustive map.",
-              "Setup: two design variables (tilt, dihedral), three objectives (hover power,",
-              "lateral acceleration, rotor-failure margin), two constraints (yaw, propeller",
-              "clearance); population 80, 100 generations; one frame per generation."])
-    card(parts / "opt_title.png", 10, parts / "opt_0.webm")
-    n = len(list(frames.glob("f*.png")))
+    """Scenario 1: only the NSGA-II candidates moving to the Pareto front, black on white (pareto_front.py frames)."""
+    frames = P / "design_optimization" / "results" / "pareto2_frames"
+    OUT.mkdir(parents=True, exist_ok=True)
     run([FF, "-v", "error", "-y", "-framerate", "4", "-i", str(frames / "f%03d.png"),
-         "-vf", f"tpad=stop_mode=clone:stop_duration=6,fps=25,scale=1280:720,format=yuv420p", *ENC,
-         str(parts / "opt_1.webm")])
-    ms.slide("opt_result", "Scenario 1: result", image=FIGS / "pareto_evolution.pdf", img_box=(0.04, 0.03, 0.92, 0.78),
-             sub="generations 0, 5, 20 and 100 in the design plane (top) and the power - failure plane (bottom)")
-    card(parts / "opt_result.png", 12, parts / "opt_9.webm")
-    concat([parts / "opt_0.webm", parts / "opt_1.webm", parts / "opt_9.webm"], OUT / "design_optimization.webm")
-    print(f"  {n} generation frames")
+         "-vf", "tpad=stop_mode=clone:stop_duration=5,fps=25,scale=1280:720,format=yuv420p", *ENC,
+         str(OUT / "design_optimization.webm")])
+    print(f"wrote {OUT / 'design_optimization.webm'} ({duration(OUT / 'design_optimization.webm'):.0f} s)")
 
 
 def ellipsoid_video():
