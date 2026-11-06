@@ -36,7 +36,7 @@ software in the loop and its live plots; flights sped up ×3 (labelled).
 
 | Scenario | Paper | Video | What it proves |
 |---|---|---|---|
-| 1. Convergence of the optimization | Section 7.1, Fig. 4 | [design_optimization.webm](videos/tilt_dihedral_design/design_optimization.webm) | NSGA-II population at each of the 100 generations, in the design plane and against the exact Pareto front of the exhaustive map, with the convergence (IGD) |
+| 1. Convergence of the optimization | Section 7.1, Fig. 4 | [design_optimization.webm](videos/tilt_dihedral_design/design_optimization.webm) | NSGA-II candidates (black) moving from a random start to the Pareto front of hover power against rotor-failure margin, generation by generation until convergence |
 | 2. Ellipsoids against exact sets | Section 7.2, Fig. 5 | [design_ellipsoids.webm](videos/tilt_dihedral_design/design_ellipsoids.webm) | rotating 3D exact force and moment sets against the axis and manipulability ellipsoids; designs sized with the ellipsoids miss the requirement (−8 to −10 %) or waste hover power (+27 to +44 %) |
 | 3. Attitude envelope in flight | Section 7.4, Fig. 6 | [design_attitude_envelope.webm](videos/tilt_dihedral_design/design_attitude_envelope.webm) | body tilted 10 to 16° in the weakest direction; the smallest rotor force matches the model within 0.01 N; the reference reaches its limit at 14.8°, the optimum at 15.4° |
 | 4. Rotor failure | Section 7.5, Fig. 7 | [design_rotor_failure.webm](videos/tilt_dihedral_design/design_rotor_failure.webm) | rotor 1 cut in hover at 5 m, five-rotor mixer (research copy of ArduPilot, simulation only): hover tilted 23°, weakest remaining rotor 0.97 N (optimum) vs 0.90 N, landing on five rotors |
