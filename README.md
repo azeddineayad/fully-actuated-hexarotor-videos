@@ -23,3 +23,22 @@ All the videos are simulations: the real aircraft has not flown yet. Each video 
 paper come from the same flights.
 
 `tools/` contains the scripts that recorded and cut the videos.
+
+## Second paper: optimal tilt and dihedral angles of the rotors
+
+Videos of the paper *"Optimal Tilt and Dihedral Angles of a Fixed-Tilt Fully Actuated Hexarotor: Exact Wrench Indices,
+Rotor-Failure Tolerance and Flight-Code Validation"* (A. AYAD). Each rotor of the F680 gets a tilt about its arm and a
+dihedral along it; the design minimizing the hover power under four requirements is a 28° tilt with a 9.5° outward
+dihedral. Each flight video shows the **reference** design (28°, no dihedral) and then the **optimum** (28°, −9.5°),
+flown by the Pixhawk 6C flight code (ArduPilot) in software in the loop, with the live plots of the flight code; it
+ends with the figure of the paper made from these two flights. Flights sped up ×3 (labelled).
+
+| Scenario | Paper | Video | What it shows |
+|---|---|---|---|
+| 0. Optimization | Section 5.3, Fig. 4 | [design_optimization.webm](videos/tilt_dihedral_design/design_optimization.webm) | NSGA-II population at each of the 100 generations, in the design plane and against the exact Pareto front of the map, with the convergence (IGD) |
+| 1. Nominal flight | Section 7.2, Fig. 5 | [design_circle.webm](videos/tilt_dihedral_design/design_circle.webm) | two circles of radius 4 m at 2 m/s with the body level; tracking and hover power of both designs |
+| 2. Attitude held in hover | Section 7.3, Fig. 6a | [design_attitude_hold.webm](videos/tilt_dihedral_design/design_attitude_hold.webm) | body held at 12° in the weakest direction; the reference drops below the 1 N rotor margin, the optimum keeps it |
+| 3. Gusts | Section 7.4, Fig. 6b | [design_gust.webm](videos/tilt_dihedral_design/design_gust.webm) | three 4 N gusts at level attitude; identical for both designs (limited by the position loop) |
+| 4. Rotor failure | Section 7.5, Fig. 7 | [design_rotor_failure.webm](videos/tilt_dihedral_design/design_rotor_failure.webm) | rotor 1 cut in hover at 5 m, five-rotor mixer (research copy of ArduPilot, simulation only), hover tilted 23°, landing on five rotors |
+
+All these videos are simulations. `tools/tilt_dihedral_design/` contains the scripts that recorded and assembled them.
