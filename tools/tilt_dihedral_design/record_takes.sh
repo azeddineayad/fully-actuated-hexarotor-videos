@@ -13,6 +13,7 @@ designs=("$@")
 [ $# -eq 0 ] && designs=(reference optimum)
 case "$sc" in
   attitude_hold) extra="--azimuth 5 --tilt 12" ;;
+  attitude_envelope) extra="--no-limits --azimuth 5" ;;
   *) extra="" ;;
 esac
 for d in "${designs[@]}"; do

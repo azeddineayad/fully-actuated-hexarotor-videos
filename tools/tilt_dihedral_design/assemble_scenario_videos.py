@@ -53,6 +53,14 @@ SCEN = {
                "Setup: hover at 3 m; three horizontal gusts of 4 N (1.6 m/s2) for 2 s each,",
                "6 s apart, towards +y, +x and -x-y, applied by the physics; landing."],
         figure="hold_gust"),
+    "attitude_envelope": dict(
+        title="Scenario 3: attitude envelope in flight",
+        lines=["Purpose: check in flight the attitude limit predicted for each design: with rotor forces",
+               "between 0 and F_max, 14.8 deg for the reference and 15.4 deg for the optimum.",
+               "Setup: hover at 3 m; body tilted nose up (weakest direction) in steps of 10, 12, 14, 15",
+               "and 16 deg, 10 s each, thrust kept vertical, position held; flight-code attitude and lean",
+               "limits raised for this test only (simulation)."],
+        figure="envelopes"),
     "rotor_failure": dict(
         title="Scenario 4: loss of a rotor in hover",
         lines=["Purpose: requirement R2, hover after the loss of any rotor with >= 1 N on the others.",
@@ -107,6 +115,11 @@ def events(sc, meta, truth):
             out.append((truth["wall"][s0 + 1], truth["wall"][s1], f"gust {np.hypot(g[1], g[2]):.0f} N "
                         f"towards ({g[1]:+.1f}, {g[2]:+.1f})", "red"))
         return [(0, out[0][0], "hover, body level", "yellow")] + out + [(ev["event_end_wall"], 1e12, "landing", "yellow")]
+    if sc == "attitude_envelope":
+        st = ev["steps"]
+        return ([(0, st[0][0], "hover, body level", "yellow")] +
+                [(w0, (st[k + 1][0] if k + 1 < len(st) else ev["level_wall"]), f"body tilted {v:g} deg", "white")
+                 for k, (w0, v) in enumerate(st)] + [(ev["level_wall"], 1e12, "back to level, landing", "yellow")])
     return [(0, ev["failure_wall"], "hover at 5 m", "yellow"),
             (ev["failure_wall"], ev["event_end_wall"], "ROTOR 1 CUT - five-rotor mixer", "red"),
             (ev["event_end_wall"], 1e12, "landing on five rotors", "yellow")]
@@ -174,7 +187,7 @@ def optimization_video():
     parts = OUT / "parts"
     parts.mkdir(parents=True, exist_ok=True)
     ms.OUT = parts
-    ms.slide("opt_title", "Scenario 0: the optimization",
+    ms.slide("opt_title", "Scenario 1: convergence of the optimization",
              ["Purpose: show that the genetic algorithm (NSGA-II) finds the Pareto front of the",
               "design problem, and that it converges to the exact front of the exhaustive map.",
               "Setup: two design variables (tilt, dihedral), three objectives (hover power,",
@@ -185,20 +198,42 @@ def optimization_video():
     run([FF, "-v", "error", "-y", "-framerate", "4", "-i", str(frames / "f%03d.png"),
          "-vf", f"tpad=stop_mode=clone:stop_duration=6,fps=25,scale=1280:720,format=yuv420p", *ENC,
          str(parts / "opt_1.webm")])
-    ms.slide("opt_result", "Scenario 0: result", image=FIGS / "pareto_evolution.pdf", img_box=(0.04, 0.03, 0.92, 0.78),
+    ms.slide("opt_result", "Scenario 1: result", image=FIGS / "pareto_evolution.pdf", img_box=(0.04, 0.03, 0.92, 0.78),
              sub="generations 0, 5, 20 and 100 in the design plane (top) and the power - failure plane (bottom)")
     card(parts / "opt_result.png", 12, parts / "opt_9.webm")
     concat([parts / "opt_0.webm", parts / "opt_1.webm", parts / "opt_9.webm"], OUT / "design_optimization.webm")
     print(f"  {n} generation frames")
 
 
+def ellipsoid_video():
+    frames = P / "design_optimization" / "results" / "ellipsoid_frames"
+    parts = OUT / "parts"
+    parts.mkdir(parents=True, exist_ok=True)
+    ms.OUT = parts
+    ms.slide("ell_title", "Scenario 2: force and torque ellipsoids",
+             ["Purpose: show what the exact attainable sets change for the design, compared with the",
+              "force and torque ellipsoids used in design studies.",
+              "Setup: at hover, forces with zero moment and moments with zero force, for the optimum;",
+              "exact polytope (rotor forces between 1 N and F_max), axis ellipsoid (exact on the body axes),",
+              "manipulability ellipsoid (largest ball of rotor changes); then the same lateral requirement",
+              "sized with each set and checked with the exact index."])
+    card(parts / "ell_title.png", 12, parts / "ell_0.webm")
+    run([FF, "-v", "error", "-y", "-stream_loop", "1", "-framerate", "12", "-i", str(frames / "f%03d.png"),
+         "-vf", "fps=25,scale=1280:720,format=yuv420p", *ENC, str(parts / "ell_1.webm")])
+    ms.slide("ell_result", "Scenario 2: result", image=FIGS / "ellipsoids.pdf", img_box=(0.03, 0.05, 0.94, 0.70),
+             sub="(a)(b) the axis ellipsoid leaves the exact set in the weak directions, the manipulability ellipsoid "
+                 "is far inside; (c) designs sized with each set: % = true lateral acceleration against the requirement")
+    card(parts / "ell_result.png", 14, parts / "ell_9.webm")
+    concat([parts / "ell_0.webm", parts / "ell_1.webm", parts / "ell_9.webm"], OUT / "design_ellipsoids.webm")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("scenarios", nargs="*", default=["optimization", *SCEN])
+    ap.add_argument("scenarios", nargs="*", default=["optimization", "ellipsoids", "attitude_envelope", "rotor_failure"])
     ap.add_argument("--speed", type=float, default=3.0)
     a = ap.parse_args()
     for sc in a.scenarios:
-        optimization_video() if sc == "optimization" else scenario_video(sc, a.speed)
+        {"optimization": optimization_video, "ellipsoids": ellipsoid_video}.get(sc, lambda: scenario_video(sc, a.speed))()
 
 
 if __name__ == "__main__":
